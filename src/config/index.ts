@@ -15,6 +15,9 @@ const config = {
     logfile: process.env.LOG_FILE || 'logs/combined.log',
     errlog: process.env.ERR_LOG || 'logs/error.log',
   },
+  db: {
+    uri: process.env.DATABASE_URI || 'mysql://tester:qwerty@task-db:3306/task',
+  },
 };
 
 export default config;

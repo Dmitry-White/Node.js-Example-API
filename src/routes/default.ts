@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get('/', defaultGet);
 router.delete('/', handleAsync(defaultDelete));
-router.post('/', defaultPost);
+router.post('/', handleAsync(defaultPost));
 
 export default router;

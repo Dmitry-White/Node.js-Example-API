@@ -1,10 +1,10 @@
 version: '3.7'
 
 services:
-  node-api-dev:
-    container_name: node-example-api-dev
+  task-api-dev:
+    container_name: task-api-dev
     networks:
-      - node-api-network
+      - task-network
     build:
       target: development
     volumes:
@@ -15,26 +15,48 @@ services:
       - NODE_ENV=development
       - PORT=5001
     expose:
-      - '5001'
+      - 5001
     ports:
-      - '5001:5001'
+      - 5001:5001
     command: npm run dev
 
-  node-api-prod:
-    container_name: node-example-api-prod
+  task-api-prod:
+    container_name: task-api-prod
     networks:
-      - node-api-network
+      - task-network
     build:
       target: production
     environment:
       - NODE_ENV=production
       - PORT=5002
     expose:
-      - '5002'
+      - 5002
     ports:
-      - '5002:5002'
+      - 5002:5002
     command: npm run prod
 
+  task-db:
+    container_name: task-db
+    image: mysql
+    networks:
+      - task-network
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: task
+      MYSQL_USER: tester
+      MYSQL_PASSWORD: qwerty
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - task-volume:/var/lib/mysql
+
 networks:
-  node-api-network:
+  task-network:
+    name: task-network
     driver: bridge
+
+volumes:
+  task-volume:
+    name: task-volume
