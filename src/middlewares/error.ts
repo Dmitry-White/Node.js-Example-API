@@ -1,6 +1,8 @@
 import {ErrorRequestHandler, RequestHandler} from 'express';
 import {getReasonPhrase, StatusCodes} from 'http-status-codes';
 
+import logger from '../loaders/logger';
+
 const getErrorPayload = (code: StatusCodes, message: string) => ({
   success: false,
   error: {
@@ -8,6 +10,11 @@ const getErrorPayload = (code: StatusCodes, message: string) => ({
     message,
   },
 });
+
+const handleErrorEvent = (event: string) => (error: Error) => {
+  logger.error(event);
+  throw error;
+};
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   const errorCode = StatusCodes.NOT_FOUND;
@@ -26,4 +33,4 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   res.status(err.status || StatusCodes.INTERNAL_SERVER_ERROR).json(payload);
 };
 
-export {notFoundErrorHandler, errorHandler};
+export {notFoundErrorHandler, errorHandler, handleErrorEvent};

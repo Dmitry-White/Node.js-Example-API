@@ -1,6 +1,10 @@
 import bodyMiddleware from '../middlewares/body';
 import corsMiddleware from '../middlewares/cors';
-import {errorHandler, notFoundErrorHandler} from '../middlewares/error';
+import {
+  errorHandler,
+  handleErrorEvent,
+  notFoundErrorHandler,
+} from '../middlewares/error';
 import headersMiddleware from '../middlewares/headers';
 import morganMiddleware from '../middlewares/morgan';
 import indexRoute from '../routes';
@@ -14,6 +18,8 @@ const expressLoader = ({app}: RootLoader) => {
 
   app.use(indexRoute);
 
+  process.on('unhandledRejection', handleErrorEvent('unhandledRejection'));
+  process.on('uncaughtException', handleErrorEvent('uncaughtException'));
   app.use(notFoundErrorHandler);
   app.use(errorHandler);
 };
