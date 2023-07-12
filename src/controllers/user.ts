@@ -1,29 +1,36 @@
 import {RequestHandler} from 'express';
-import logger from '../loaders/logger';
 
-import UserModel from '../models/user';
+import logger from '../loaders/logger';
+import {User} from '../models';
 import UserService from '../services/user';
 
-const userService = new UserService(UserModel, logger);
+const userService = new UserService(User, logger);
 
-const getUsers: RequestHandler = (req, res) => {
-  const users = userService.getUsers();
+const getUsers: RequestHandler = async (req, res) => {
+  const users = await userService.getUsers();
   res.json(users);
 };
-const getUser: RequestHandler = (req, res) => {
-  const user = userService.getUser();
+
+const getUser: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  const user = await userService.getUser(id);
   res.json(user);
 };
-const createUser: RequestHandler = (req, res) => {
-  const user = userService.createUser();
+
+const createUser: RequestHandler = async (req, res) => {
+  const user = await userService.createUser(req.body);
   res.json(user);
 };
-const updateUser: RequestHandler = (req, res) => {
-  const user = userService.updateUser();
+
+const updateUser: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  const user = await userService.updateUser(id, req.body);
   res.json(user);
 };
-const removeUser: RequestHandler = (req, res) => {
-  const user = userService.deleteUser();
+
+const removeUser: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  const user = await userService.deleteUser(id);
   res.json(user);
 };
 

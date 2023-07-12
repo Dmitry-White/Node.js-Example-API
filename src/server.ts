@@ -9,8 +9,8 @@ const startServer = async () => {
 
   await rootLoader({app});
 
-  app.listen(config.port, () => {
-    logger.info(`Server running at ${config.port}`);
+  app.listen(config.server.port, () => {
+    logger.info(`Server running at ${config.server.port}`);
   });
 };
 

@@ -1,66 +1,108 @@
-import {Model} from 'sequelize';
-
-import UserModel from '../models/user';
+import {User} from '../models';
 import Logger from '../types/logger';
-import {User} from '../types/model';
+import {
+  BaseDTO,
+  UserDTO,
+  UserOutput,
+  UserShape,
+  UsersOutput,
+} from '../types/dto';
 
 class UserService {
-  userModel: typeof UserModel;
+  userModel: typeof User;
   logger: Logger;
 
-  constructor(userModel: typeof UserModel, logger: Logger) {
+  constructor(userModel: typeof User, logger: Logger) {
     this.userModel = userModel;
     this.logger = logger;
   }
 
-  async createUser(): Promise<Model<User> | null> {
-    const user: Model<User> = {} as Model<User>;
+  async findUser(email: string): Promise<UserOutput> {
+    const data = await this.userModel.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!data) return null;
 
-    if (!user) return null;
+    const user = data.toJSON();
+    this.logger.info('Found User: ', user);
 
-    this.logger.info('User Create');
-
-    return Promise.resolve(user);
+    return user;
   }
 
-  async updateUser(): Promise<Model<User> | null> {
-    const user: Model<User> = {} as Model<User>;
+  async createUser({
+    name,
+    email,
+    password,
+    access_token,
+    role,
+  }: Partial<UserShape>): Promise<UserOutput> {
+    const data = await this.userModel.create({
+      name,
+      email,
+      password,
+      access_token,
+      role,
+    });
+    if (!data) return null;
 
-    if (!user) return null;
+    const user = data.toJSON();
+    this.logger.info('Created User: ', user);
 
-    this.logger.info('User Update');
-
-    return Promise.resolve(user);
+    return user;
   }
 
-  async getUser(): Promise<Model<User> | null> {
-    const user: Model<User> = {} as Model<User>;
+  async updateUser(id: string, payload: BaseDTO): Promise<UserOutput> {
+    const data = await this.userModel.findByPk(id);
+    if (!data) return null;
 
-    if (!user) return null;
+    await this.userModel.update(payload, {
+      where: {
+        id,
+      },
+    });
 
-    this.logger.info('User Get');
+    const user = data.toJSON();
+    this.logger.info('Updated User: ', user);
 
-    return Promise.resolve(user);
+    return user;
   }
 
-  async getUsers(): Promise<Model<User>[] | null> {
-    const users: Model<User>[] = [];
+  async getUser(id: string): Promise<UserOutput> {
+    const data = await this.userModel.findByPk(id);
+    if (!data) return null;
 
-    if (!users) return null;
+    const user = data.toJSON();
+    this.logger.info('Retrieved User: ', user);
 
-    this.logger.info('Users Get');
-
-    return Promise.resolve(users);
+    return user;
   }
 
-  async deleteUser(): Promise<Model<User> | null> {
-    const user: Model<User> = {} as Model<User>;
+  async getUsers(): Promise<UsersOutput> {
+    const data = await this.userModel.findAll();
+    if (!data) return null;
 
-    if (!user) return null;
+    const users = data.map(entry => entry.toJSON());
+    this.logger.info('Retrieved Users: ', users);
 
-    this.logger.info('User Delete');
+    return users;
+  }
 
-    return Promise.resolve(user);
+  async deleteUser(id: string): Promise<UserOutput> {
+    const data = await this.userModel.findByPk(id);
+    if (!data) return null;
+
+    await this.userModel.destroy({
+      where: {
+        id,
+      },
+    });
+
+    const user = data.toJSON();
+    this.logger.info('Deleted User: ', user);
+
+    return user;
   }
 }
 

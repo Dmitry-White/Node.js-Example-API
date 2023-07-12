@@ -1,5 +1,4 @@
 const config = {
-  port: process.env.PORT || 5000,
   client: {
     url: process.env.CLIENT_URL || 'http://example.com',
     headers:
@@ -7,6 +6,10 @@ const config = {
       'Origin, X-Requested-With, Content-Type, Accept',
     methods:
       process.env.CLIENT_METHODS || 'GET,POST,HEAD,OPTIONS,PUT,PATCH,DELETE',
+  },
+  server: {
+    port: process.env.PORT || 5000,
+    jwtsecret: process.env.JWT_SECRET || 'qwerty123',
   },
   logs: {
     service: 'node-example-api',
