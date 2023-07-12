@@ -1,8 +1,10 @@
 import express from 'express';
+import logger from '../loaders/logger';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
+  logger.error('Test');
   res.json({message: 'Default Route'});
 });
 

@@ -1,7 +1,7 @@
 import {Application} from 'express';
 
-interface ExpressLoader {
+interface RootLoader {
   app: Application;
 }
 
-export {ExpressLoader};
+export {RootLoader};

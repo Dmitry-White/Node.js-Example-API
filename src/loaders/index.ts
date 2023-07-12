@@ -1,7 +1,7 @@
-import {ExpressLoader} from '../types';
+import {RootLoader} from '../types';
 import expressLoader from './express';
 
-const rootLoader = async ({app}: ExpressLoader) => {
+const rootLoader = async ({app}: RootLoader) => {
   expressLoader({app});
 };
 
