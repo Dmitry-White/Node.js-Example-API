@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  node-api-dev:
+    container_name: node-example-api-dev
+    networks:
+      - node-api-network
+    build:
+      target: development
+    volumes:
+      - ./src:/app/src
+      - ./nodemon.json:/app/nodemon.json
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=development
+      - PORT=5001
+    expose:
+      - '5001'
+    ports:
+      - '5001:5001'
+    command: npm run dev
+
+  node-api-prod:
+    container_name: node-example-api-prod
+    networks:
+      - node-api-network
+    build:
+      target: production
+    environment:
+      - NODE_ENV=production
+      - PORT=5002
+    expose:
+      - '5002'
+    ports:
+      - '5002:5002'
+    command: npm run prod
+
+networks:
+  node-api-network:
+    driver: bridge
