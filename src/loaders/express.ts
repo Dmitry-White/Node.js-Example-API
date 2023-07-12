@@ -18,10 +18,10 @@ const expressLoader = ({app}: RootLoader) => {
 
   app.use(indexRoute);
 
-  process.on('unhandledRejection', handleErrorEvent('unhandledRejection'));
-  process.on('uncaughtException', handleErrorEvent('uncaughtException'));
   app.use(notFoundErrorHandler);
   app.use(errorHandler);
+  process.on('unhandledRejection', handleErrorEvent('unhandledRejection'));
+  process.on('uncaughtException', handleErrorEvent('uncaughtException'));
 };
 
 export default expressLoader;

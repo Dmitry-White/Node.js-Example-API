@@ -16,6 +16,16 @@ const handleErrorEvent = (event: string) => (error: Error) => {
   throw error;
 };
 
+const handleAsync =
+  (handler: RequestHandler): RequestHandler =>
+  async (req, res, next) => {
+    try {
+      await handler(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  };
+
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   const errorCode = StatusCodes.NOT_FOUND;
   const errorMessage = getReasonPhrase(StatusCodes.NOT_FOUND);
@@ -33,4 +43,4 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   res.status(err.status || StatusCodes.INTERNAL_SERVER_ERROR).json(payload);
 };
 
-export {notFoundErrorHandler, errorHandler, handleErrorEvent};
+export {notFoundErrorHandler, errorHandler, handleErrorEvent, handleAsync};

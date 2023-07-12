@@ -1,16 +1,15 @@
 import {RequestHandler} from 'express';
 
-const defaultGet: RequestHandler = async (req, res) => {
-  await new Promise((res, rej) => {
-    setTimeout(() => {
-      rej('Time out!');
-    }, 5000);
-  });
-  res.json({message: 'Default Route'});
+const defaultGet: RequestHandler = (req, res) => {
+  throw new Error('Forbidden');
+};
+
+const defaultDelete: RequestHandler = async (req, res) => {
+  throw new Error('Forbidden');
 };
 
 const defaultPost: RequestHandler = (req, res) => {
   res.json({message: 'Default Route', body: req.body});
 };
 
-export {defaultGet, defaultPost};
+export {defaultGet, defaultDelete, defaultPost};
