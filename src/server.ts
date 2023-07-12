@@ -1,11 +1,16 @@
-import app from './config/express';
+import express from 'express';
 
-const PORT = process.env.PORT || 5000;
+import rootLoader from './loaders';
+import config from './config';
 
-const startServer = () => {
-  app.listen(PORT, () => {
-    console.log(`Server running at ${PORT}`);
+const startServer = async () => {
+  const app = express();
+
+  await rootLoader({app});
+
+  app.listen(config.port, () => {
+    console.log(`Server running at ${config.port}`);
   });
 };
 
-export {startServer};
+startServer();
