@@ -1,5 +1,4 @@
 import express from 'express';
-import passport from 'passport';
 
 import {
   getUsers,
@@ -8,48 +7,46 @@ import {
   updateUser,
   removeUser,
 } from '../controllers/user';
-import {handleAsync} from '../middlewares/error';
+import {authenticate} from '../middlewares/auth';
+import deserialize from '../middlewares/jsonApi';
 import {authorize} from '../middlewares/rbac';
 import validate from '../middlewares/validation';
-import {Permissions} from '../types';
+import {Assets, Permissions} from '../types';
 import ValidationStrategies from '../types/validation';
 
 const router = express.Router();
 
-router.get(
-  '/',
-  passport.authenticate('jwt', {session: false}),
-  authorize(Permissions.LIST),
-  handleAsync(getUsers)
-);
+router.get('/', authenticate, authorize(Permissions.LIST), getUsers);
 router.post(
   '/',
+  deserialize(Assets.USER),
   validate(ValidationStrategies.CREATE_USER),
-  passport.authenticate('jwt', {session: false}),
+  authenticate,
   authorize(Permissions.CREATE),
-  handleAsync(createUser)
+  createUser
 );
 router.get(
   '/:id',
   validate(ValidationStrategies.PARAMS),
-  passport.authenticate('jwt', {session: false}),
+  authenticate,
   authorize(Permissions.GET_SINGLE),
-  handleAsync(getUser)
+  getUser
 );
 router.put(
   '/:id',
+  deserialize(Assets.USER),
   validate(ValidationStrategies.PARAMS),
   validate(ValidationStrategies.UPDATE_USER),
-  passport.authenticate('jwt', {session: false}),
+  authenticate,
   authorize(Permissions.UPDATE_SINGLE),
-  handleAsync(updateUser)
+  updateUser
 );
 router.delete(
   '/:id',
   validate(ValidationStrategies.PARAMS),
-  passport.authenticate('jwt', {session: false}),
+  authenticate,
   authorize(Permissions.DESTROY),
-  handleAsync(removeUser)
+  removeUser
 );
 
 export default router;

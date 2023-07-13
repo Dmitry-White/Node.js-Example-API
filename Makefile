@@ -1,7 +1,7 @@
 .PHONY: clean, start, stop
 
 clean:
-	docker image rm $$(docker image ls -q)
+	docker system prune -af
 
 start:
 	docker-compose up -d

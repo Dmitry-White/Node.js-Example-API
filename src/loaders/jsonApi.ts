@@ -42,9 +42,14 @@ const jsonApiAuthSchema = {
   },
 };
 
+const jsonApiErrorSchema = {
+  id: 'id',
+};
+
 const jsonApiLoader = () => {
   jsonApiSerializer.register(Assets.USER, jsonApiUserSchema);
   jsonApiSerializer.register(Assets.AUTH, jsonApiAuthSchema);
+  jsonApiSerializer.register(Assets.ERROR, jsonApiErrorSchema);
 };
 
 export {jsonApiSerializer, jsonApiLoader};

@@ -75,15 +75,20 @@ class AuthService {
     email,
     password,
   }: BaseDTO): Promise<{user: UserShape; token: string}> {
-    const hashedPassword = await AuthService.genHash(password);
-    this.logger.info('Hashed password', {hashedPassword});
-
     const token = AuthService.getJwt({email});
     this.logger.info('Generated JWT: ', token);
 
     const user = await this.userService.findUser(email);
 
-    await bcrypt.compare(password, hashedPassword);
+    console.log('Comparing: ', password, user.password);
+    const isValid = bcrypt.compareSync(password, user.password);
+    console.log('isValid: ', isValid);
+    if (!isValid) {
+      const errorCode = StatusCodes.FORBIDDEN;
+      const errorMessage = `${getReasonPhrase(errorCode)}: Wrong password`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     const updatePayload: Partial<UserShape> = {
       access_token: token,
