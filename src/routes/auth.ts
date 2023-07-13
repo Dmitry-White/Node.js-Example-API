@@ -8,15 +8,11 @@ import ValidationStrategies from '../types/validation';
 const router = express.Router();
 
 router.post(
-  '/signup',
+  '/',
   validate(ValidationStrategies.CREATE_USER),
   handleAsync(signUp)
 );
 
-router.post(
-  '/signin',
-  validate(ValidationStrategies.SIGNIN),
-  handleAsync(signIn)
-);
+router.put('/', validate(ValidationStrategies.SIGNIN), handleAsync(signIn));
 
 export default router;

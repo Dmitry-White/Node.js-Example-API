@@ -1,23 +1,29 @@
 import {RequestHandler} from 'express';
 
+import {jsonApiSerializer} from '../loaders/jsonApi';
 import logger from '../loaders/logger';
 import {User} from '../models/';
 import AuthService from '../services/auth';
+import TransformService from '../services/transform';
 import UserService from '../services/user';
+import {Assets} from '../types';
 
 const userService = new UserService(User, logger);
 const authService = new AuthService(userService, logger);
+const transformService = new TransformService(jsonApiSerializer, logger);
 
 const signUp: RequestHandler = async (req, res) => {
-  const data = await authService.signUp(req.body);
+  const auth = await authService.signUp(req.body);
+  const serialAuth = await transformService.serialize(Assets.AUTH, auth);
 
-  res.json(data);
+  res.set(transformService.dataHeader).send(serialAuth);
 };
 
 const signIn: RequestHandler = async (req, res) => {
-  const data = await authService.signIn(req.body);
+  const auth = await authService.signIn(req.body);
+  const serialAuth = await transformService.serialize(Assets.AUTH, auth);
 
-  res.json(data);
+  res.set(transformService.dataHeader).send(serialAuth);
 };
 
 export {signUp, signIn};

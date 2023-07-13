@@ -11,6 +11,7 @@ const enum Roles {
 
 const enum Assets {
   USER = 'user',
+  AUTH = 'auth',
 }
 
 const enum Permissions {

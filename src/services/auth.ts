@@ -68,9 +68,6 @@ class AuthService {
       access_token: token,
     });
 
-    Reflect.deleteProperty(user, 'password');
-    Reflect.deleteProperty(user, 'role');
-    Reflect.deleteProperty(user, 'access_token');
     return {user, token};
   }
 
@@ -93,9 +90,6 @@ class AuthService {
     };
     await this.userService.updateUser(user.id, updatePayload);
 
-    Reflect.deleteProperty(user, 'password');
-    Reflect.deleteProperty(user, 'role');
-    Reflect.deleteProperty(user, 'access_token');
     return {user, token};
   }
 }
