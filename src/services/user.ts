@@ -1,12 +1,10 @@
+import {getReasonPhrase, StatusCodes} from 'http-status-codes';
+
 import {User} from '../models';
 import Logger from '../types/logger';
-import {
-  BaseDTO,
-  UserDTO,
-  UserOutput,
-  UserShape,
-  UsersOutput,
-} from '../types/dto';
+import {BaseDTO, UserOutput, UserShape, UsersOutput} from '../types/dto';
+
+import HttpError from './error';
 
 class UserService {
   userModel: typeof User;
@@ -55,7 +53,12 @@ class UserService {
 
   async updateUser(id: string, payload: BaseDTO): Promise<UserOutput> {
     const data = await this.userModel.findByPk(id);
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = getReasonPhrase(errorCode);
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     await this.userModel.update(payload, {
       where: {
@@ -71,7 +74,12 @@ class UserService {
 
   async getUser(id: string): Promise<UserOutput> {
     const data = await this.userModel.findByPk(id);
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = getReasonPhrase(errorCode);
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     const user = data.toJSON();
     this.logger.info('Retrieved User: ', user);
@@ -91,7 +99,12 @@ class UserService {
 
   async deleteUser(id: string): Promise<UserOutput> {
     const data = await this.userModel.findByPk(id);
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = getReasonPhrase(errorCode);
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     await this.userModel.destroy({
       where: {

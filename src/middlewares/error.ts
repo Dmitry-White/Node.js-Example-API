@@ -28,19 +28,20 @@ const handleAsync =
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   const errorCode = StatusCodes.NOT_FOUND;
-  const errorMessage = getReasonPhrase(StatusCodes.NOT_FOUND);
+  const errorMessage = getReasonPhrase(errorCode);
 
   const payload = getErrorPayload(errorCode, errorMessage);
-  res.status(StatusCodes.NOT_FOUND).json(payload);
+  res.status(errorCode).json(payload);
 };
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  console.log('!!!!!!!!!!!!!!', err);
   const errorCode = err.code || StatusCodes.INTERNAL_SERVER_ERROR;
-  const errorMessage =
-    err.message || getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR);
+  const errorStatus = err.status || errorCode;
+  const errorMessage = err.message || getReasonPhrase(errorCode);
 
   const payload = getErrorPayload(errorCode, errorMessage);
-  res.status(err.status || StatusCodes.INTERNAL_SERVER_ERROR).json(payload);
+  res.status(errorStatus).json(payload);
 };
 
 export {notFoundErrorHandler, errorHandler, handleErrorEvent, handleAsync};
