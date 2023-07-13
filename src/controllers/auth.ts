@@ -16,14 +16,14 @@ const signUp: RequestHandler = async (req, res) => {
   const auth = await authService.signUp(req.body);
   const serialAuth = await transformService.serialize(Assets.AUTH, auth);
 
-  res.set(transformService.dataHeader).send(serialAuth);
+  res.send(serialAuth);
 };
 
 const signIn: RequestHandler = async (req, res) => {
   const auth = await authService.signIn(req.body);
   const serialAuth = await transformService.serialize(Assets.AUTH, auth);
 
-  res.set(transformService.dataHeader).send(serialAuth);
+  res.send(serialAuth);
 };
 
 export {signUp, signIn};

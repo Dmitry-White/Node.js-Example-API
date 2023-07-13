@@ -6,6 +6,7 @@ const config = {
       'Origin, X-Requested-With, Content-Type, Accept',
     methods:
       process.env.CLIENT_METHODS || 'GET,POST,HEAD,OPTIONS,PUT,PATCH,DELETE',
+    spec: 'application/vnd.api+json',
   },
   server: {
     port: process.env.PORT || 5000,

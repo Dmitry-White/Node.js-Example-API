@@ -14,7 +14,7 @@ const getUsers: RequestHandler = async (req, res) => {
   const users = await userService.getUsers();
   const serialUsers = await transformService.serialize(Assets.USER, users);
 
-  res.set(transformService.dataHeader).send(serialUsers);
+  res.send(serialUsers);
 };
 
 const getUser: RequestHandler = async (req, res) => {
@@ -23,14 +23,14 @@ const getUser: RequestHandler = async (req, res) => {
   const user = await userService.getUser(id);
   const serialUser = await transformService.serialize(Assets.USER, user);
 
-  res.set(transformService.dataHeader).send(serialUser);
+  res.send(serialUser);
 };
 
 const createUser: RequestHandler = async (req, res) => {
   const user = await userService.createUser(req.body);
   const serialUser = await transformService.serialize(Assets.USER, user);
 
-  res.set(transformService.dataHeader).send(serialUser);
+  res.send(serialUser);
 };
 
 const updateUser: RequestHandler = async (req, res) => {
@@ -39,7 +39,7 @@ const updateUser: RequestHandler = async (req, res) => {
   const user = await userService.updateUser(id, req.body);
   const serialUser = await transformService.serialize(Assets.USER, user);
 
-  res.set(transformService.dataHeader).send(serialUser);
+  res.send(serialUser);
 };
 
 const removeUser: RequestHandler = async (req, res) => {
@@ -48,7 +48,7 @@ const removeUser: RequestHandler = async (req, res) => {
   const user = await userService.deleteUser(id);
   const serialUser = await transformService.serialize(Assets.USER, user);
 
-  res.set(transformService.dataHeader).send(serialUser);
+  res.send(serialUser);
 };
 
 export {getUsers, getUser, createUser, updateUser, removeUser};
