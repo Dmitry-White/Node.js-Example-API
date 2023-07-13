@@ -34,8 +34,18 @@ const notFoundErrorHandler: RequestHandler = (req, res, next) => {
   res.status(errorCode).json(payload);
 };
 
+const validationErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  if (err?.error?.isJoi) {
+    console.log(err.error.message);
+    const errorCode = StatusCodes.BAD_REQUEST;
+    const errorMessage = `${getReasonPhrase(errorCode)}: ${err.error.message}`;
+
+    const payload = getErrorPayload(errorCode, errorMessage);
+    res.status(errorCode).json(payload);
+  }
+};
+
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log('!!!!!!!!!!!!!!', err);
   const errorCode = err.code || StatusCodes.INTERNAL_SERVER_ERROR;
   const errorStatus = err.status || errorCode;
   const errorMessage = err.message || getReasonPhrase(errorCode);
@@ -44,4 +54,10 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   res.status(errorStatus).json(payload);
 };
 
-export {notFoundErrorHandler, errorHandler, handleErrorEvent, handleAsync};
+export {
+  notFoundErrorHandler,
+  validationErrorHandler,
+  errorHandler,
+  handleErrorEvent,
+  handleAsync,
+};

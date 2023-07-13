@@ -4,6 +4,7 @@ import {
   errorHandler,
   handleErrorEvent,
   notFoundErrorHandler,
+  validationErrorHandler,
 } from '../middlewares/error';
 import headersMiddleware from '../middlewares/headers';
 import morganMiddleware from '../middlewares/morgan';
@@ -19,6 +20,7 @@ const expressLoader = ({app}: RootLoader) => {
   app.use(indexRoute);
 
   app.use(notFoundErrorHandler);
+  app.use(validationErrorHandler);
   app.use(errorHandler);
   process.on('unhandledRejection', handleErrorEvent('unhandledRejection'));
   process.on('uncaughtException', handleErrorEvent('uncaughtException'));

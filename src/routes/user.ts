@@ -8,22 +8,36 @@ import {
   removeUser,
 } from '../controllers/user';
 import {handleAsync} from '../middlewares/error';
-import {hasPermission} from '../middlewares/rbac';
+import {authorize} from '../middlewares/rbac';
+import validate from '../middlewares/validation';
 import {Permissions} from '../types';
+import ValidationStrategies from '../types/validation';
 
 const router = express.Router();
 
-router.get('/', hasPermission(Permissions.LIST), handleAsync(getUsers));
-router.post('/', handleAsync(createUser));
-router.get('/:id', hasPermission(Permissions.GET_SINGLE), handleAsync(getUser));
+router.get('/', authorize(Permissions.LIST), handleAsync(getUsers));
+router.post(
+  '/',
+  validate(ValidationStrategies.CREATE_USER),
+  handleAsync(createUser)
+);
+router.get(
+  '/:id',
+  validate(ValidationStrategies.PARAMS),
+  authorize(Permissions.GET_SINGLE),
+  handleAsync(getUser)
+);
 router.put(
   '/:id',
-  hasPermission(Permissions.UPDATE_SINGLE),
+  validate(ValidationStrategies.PARAMS),
+  validate(ValidationStrategies.UPDATE_USER),
+  authorize(Permissions.UPDATE_SINGLE),
   handleAsync(updateUser)
 );
 router.delete(
   '/:id',
-  hasPermission(Permissions.DESTROY),
+  validate(ValidationStrategies.PARAMS),
+  authorize(Permissions.DESTROY),
   handleAsync(removeUser)
 );
 

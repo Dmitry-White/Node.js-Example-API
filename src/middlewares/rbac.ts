@@ -8,7 +8,7 @@ import UserService from '../services/user';
 
 const userService = new UserService(User, logger);
 
-const hasPermission =
+const authorize =
   (action: string): RequestHandler =>
   async (req, res, next) => {
     const {email} = req.body;
@@ -39,4 +39,4 @@ const hasPermission =
     next();
   };
 
-export {hasPermission};
+export {authorize};
