@@ -16,7 +16,4 @@ type UserDTO = BaseDTO & {
   name: string;
 };
 
-type UserOutput = UserShape | null;
-type UsersOutput = UserShape[] | null;
-
-export {UserShape, BaseDTO, UserDTO, UserOutput, UsersOutput};
+export {UserShape, BaseDTO, UserDTO};

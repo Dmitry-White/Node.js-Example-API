@@ -1,3 +1,4 @@
+import authMiddleware from '../middlewares/auth';
 import bodyMiddleware from '../middlewares/body';
 import corsMiddleware from '../middlewares/cors';
 import {
@@ -16,6 +17,8 @@ const expressLoader = ({app}: RootLoader) => {
   app.use(headersMiddleware);
   app.use(bodyMiddleware);
   app.use(morganMiddleware);
+
+  app.use(authMiddleware);
 
   app.use(indexRoute);
 

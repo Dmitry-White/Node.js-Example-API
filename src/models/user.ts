@@ -27,7 +27,8 @@ const UserModel = (sequelize: Sequelize) =>
     },
     access_token: {
       type: DataTypes.STRING,
-      allowNull: false,
+      defaultValue: '',
+      allowNull: true,
     },
   });
 

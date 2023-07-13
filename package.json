@@ -25,6 +25,8 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.4",
     "@types/node": "^14.11.2",
+    "@types/passport": "^1.0.12",
+    "@types/passport-jwt": "^3.0.9",
     "gts": "^3.1.1",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
@@ -42,6 +44,8 @@
     "jsonwebtoken": "^9.0.1",
     "morgan": "^1.10.0",
     "mysql2": "^3.5.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
     "rbac": "^5.0.3",
     "sequelize": "^6.32.1",
     "winston": "^3.10.0"

@@ -27,6 +27,8 @@ const handleAsync =
   };
 
 const notFoundErrorHandler: RequestHandler = (req, res, next) => {
+  logger.info('notFoundErrorHandler');
+
   const errorCode = StatusCodes.NOT_FOUND;
   const errorMessage = getReasonPhrase(errorCode);
 
@@ -35,17 +37,21 @@ const notFoundErrorHandler: RequestHandler = (req, res, next) => {
 };
 
 const validationErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  logger.info('validationErrorHandler');
+
   if (err?.error?.isJoi) {
-    console.log(err.error.message);
     const errorCode = StatusCodes.BAD_REQUEST;
     const errorMessage = `${getReasonPhrase(errorCode)}: ${err.error.message}`;
 
     const payload = getErrorPayload(errorCode, errorMessage);
     res.status(errorCode).json(payload);
   }
+  next(err);
 };
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  logger.info('errorHandler');
+
   const errorCode = err.code || StatusCodes.INTERNAL_SERVER_ERROR;
   const errorStatus = err.status || errorCode;
   const errorMessage = err.message || getReasonPhrase(errorCode);

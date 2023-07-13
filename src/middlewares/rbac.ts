@@ -1,37 +1,29 @@
 import {RequestHandler} from 'express';
 import {getReasonPhrase, StatusCodes} from 'http-status-codes';
+
 import logger from '../loaders/logger';
 import {policy} from '../loaders/rbac';
 import {User} from '../models';
 import HttpError from '../services/error';
 import UserService from '../services/user';
+import {UserShape} from '../types/dto';
 
 const userService = new UserService(User, logger);
 
 const authorize =
   (action: string): RequestHandler =>
   async (req, res, next) => {
-    const {email} = req.body;
+    const {email} = req.user as UserShape;
     const asset = req.baseUrl.replace(/^\//, '');
 
-    const user = await userService.findUser(email);
-    if (!user) {
-      const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = getReasonPhrase(errorCode);
-
-      throw new HttpError(errorMessage, errorCode);
-    }
-
-    const {role} = user;
-    console.log('ROLE: ', role);
-    console.log('ACTION: ', action);
-    console.log('ASSET: ', asset);
+    const {role} = await userService.findUser(email);
 
     const isAllowed = await policy.can(role, action, asset);
-    console.log('isAllowed', isAllowed);
     if (!isAllowed) {
       const errorCode = StatusCodes.FORBIDDEN;
-      const errorMessage = getReasonPhrase(errorCode);
+      const errorMessage = `${getReasonPhrase(
+        errorCode
+      )}: Not enough permissions`;
 
       next(new HttpError(errorMessage, errorCode));
     }

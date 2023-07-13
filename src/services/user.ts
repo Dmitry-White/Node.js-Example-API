@@ -2,7 +2,7 @@ import {getReasonPhrase, StatusCodes} from 'http-status-codes';
 
 import {User} from '../models';
 import Logger from '../types/logger';
-import {BaseDTO, UserOutput, UserShape, UsersOutput} from '../types/dto';
+import {BaseDTO, UserShape} from '../types/dto';
 
 import HttpError from './error';
 
@@ -15,13 +15,18 @@ class UserService {
     this.logger = logger;
   }
 
-  async findUser(email: string): Promise<UserOutput> {
+  async findUser(email: string): Promise<UserShape> {
     const data = await this.userModel.findOne({
       where: {
         email,
       },
     });
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = `${getReasonPhrase(errorCode)}: No such user`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     const user = data.toJSON();
     this.logger.info('Found User: ', user);
@@ -33,17 +38,22 @@ class UserService {
     name,
     email,
     password,
-    access_token,
     role,
-  }: Partial<UserShape>): Promise<UserOutput> {
+  }: Partial<UserShape>): Promise<UserShape> {
     const data = await this.userModel.create({
       name,
       email,
       password,
-      access_token,
       role,
     });
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      const errorMessage = `${getReasonPhrase(
+        errorCode
+      )}: Unable to create user`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     const user = data.toJSON();
     this.logger.info('Created User: ', user);
@@ -51,11 +61,11 @@ class UserService {
     return user;
   }
 
-  async updateUser(id: string, payload: BaseDTO): Promise<UserOutput> {
+  async updateUser(id: string, payload: BaseDTO): Promise<UserShape> {
     const data = await this.userModel.findByPk(id);
     if (!data) {
       const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = getReasonPhrase(errorCode);
+      const errorMessage = `${getReasonPhrase(errorCode)}: No such user`;
 
       throw new HttpError(errorMessage, errorCode);
     }
@@ -72,11 +82,11 @@ class UserService {
     return user;
   }
 
-  async getUser(id: string): Promise<UserOutput> {
+  async getUser(id: string): Promise<UserShape> {
     const data = await this.userModel.findByPk(id);
     if (!data) {
       const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = getReasonPhrase(errorCode);
+      const errorMessage = `${getReasonPhrase(errorCode)}: No such user`;
 
       throw new HttpError(errorMessage, errorCode);
     }
@@ -87,9 +97,16 @@ class UserService {
     return user;
   }
 
-  async getUsers(): Promise<UsersOutput> {
+  async getUsers(): Promise<UserShape[]> {
     const data = await this.userModel.findAll();
-    if (!data) return null;
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = `${getReasonPhrase(
+        errorCode
+      )}: Unable to look for users`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
 
     const users = data.map(entry => entry.toJSON());
     this.logger.info('Retrieved Users: ', users);
@@ -97,11 +114,11 @@ class UserService {
     return users;
   }
 
-  async deleteUser(id: string): Promise<UserOutput> {
+  async deleteUser(id: string): Promise<UserShape> {
     const data = await this.userModel.findByPk(id);
     if (!data) {
       const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = getReasonPhrase(errorCode);
+      const errorMessage = `${getReasonPhrase(errorCode)}: No such user`;
 
       throw new HttpError(errorMessage, errorCode);
     }

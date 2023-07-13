@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from 'passport';
 
 import {
   getUsers,
@@ -15,15 +16,23 @@ import ValidationStrategies from '../types/validation';
 
 const router = express.Router();
 
-router.get('/', authorize(Permissions.LIST), handleAsync(getUsers));
+router.get(
+  '/',
+  passport.authenticate('jwt', {session: false}),
+  authorize(Permissions.LIST),
+  handleAsync(getUsers)
+);
 router.post(
   '/',
   validate(ValidationStrategies.CREATE_USER),
+  passport.authenticate('jwt', {session: false}),
+  authorize(Permissions.CREATE),
   handleAsync(createUser)
 );
 router.get(
   '/:id',
   validate(ValidationStrategies.PARAMS),
+  passport.authenticate('jwt', {session: false}),
   authorize(Permissions.GET_SINGLE),
   handleAsync(getUser)
 );
@@ -31,12 +40,14 @@ router.put(
   '/:id',
   validate(ValidationStrategies.PARAMS),
   validate(ValidationStrategies.UPDATE_USER),
+  passport.authenticate('jwt', {session: false}),
   authorize(Permissions.UPDATE_SINGLE),
   handleAsync(updateUser)
 );
 router.delete(
   '/:id',
   validate(ValidationStrategies.PARAMS),
+  passport.authenticate('jwt', {session: false}),
   authorize(Permissions.DESTROY),
   handleAsync(removeUser)
 );

@@ -10,6 +10,7 @@ const config = {
   server: {
     port: process.env.PORT || 5000,
     jwtsecret: process.env.JWT_SECRET || 'qwerty123',
+    jwtttl: process.env.JWT_TTL || '7d',
   },
   logs: {
     service: 'node-example-api',

@@ -15,12 +15,12 @@ const policy = new RBAC({
   },
   grants: {
     [Roles.USER]: [
-      `${Permissions.CREATE}_${Assets.USER}`,
       `${Permissions.GET_SINGLE}_${Assets.USER}`,
       `${Permissions.UPDATE_SINGLE}_${Assets.USER}`,
     ],
     [Roles.ADMIN]: [
       Roles.USER,
+      `${Permissions.CREATE}_${Assets.USER}`,
       `${Permissions.LIST}_${Assets.USER}`,
       `${Permissions.DESTROY}_${Assets.USER}`,
     ],
