@@ -5,6 +5,9 @@ import Logger from '../types/logger';
 import {UserShape} from '../types/dto';
 
 import HttpError from './error';
+import {handleNoUser} from '../middlewares/error';
+import AuthService from './auth';
+import {Roles} from '../types';
 
 class UserService {
   userModel: typeof User;
@@ -22,10 +25,7 @@ class UserService {
       },
     });
     if (!data) {
-      const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = `${getReasonPhrase(errorCode)}: No such user1`;
-
-      throw new HttpError(errorMessage, errorCode);
+      return handleNoUser();
     }
 
     const user = data.toJSON();
@@ -34,11 +34,47 @@ class UserService {
     return user;
   }
 
+  async getUser(id: string, caller: UserShape): Promise<UserShape> {
+    const data = await this.userModel.findByPk(id);
+    if (!data) {
+      return handleNoUser();
+    }
+
+    if (id !== caller.id && caller.role !== Roles.ADMIN) {
+      const errorCode = StatusCodes.FORBIDDEN;
+      const errorMessage = `${getReasonPhrase(errorCode)}: Mind your business`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
+
+    const user = data.toJSON();
+    this.logger.info('Retrieved User: ', user);
+
+    return user;
+  }
+
+  async getUsers(): Promise<UserShape[]> {
+    const data = await this.userModel.findAll();
+    if (!data) {
+      const errorCode = StatusCodes.NOT_FOUND;
+      const errorMessage = `${getReasonPhrase(
+        errorCode
+      )}: Unable to look for users`;
+
+      throw new HttpError(errorMessage, errorCode);
+    }
+
+    const users = data.map(entry => entry.toJSON());
+    this.logger.info('Retrieved Users: ', users);
+
+    return users;
+  }
+
   async createUser({
     name,
     email,
     password,
-    role = 'USER',
+    role = Roles.USER,
     access_token = '',
   }: Partial<UserShape>): Promise<UserShape> {
     const data = await this.userModel.create({
@@ -65,14 +101,33 @@ class UserService {
 
   async updateUser(
     id: string | number,
-    payload: Partial<UserShape>
+    caller: UserShape,
+    details: Partial<UserShape>
   ): Promise<UserShape> {
     const data = await this.userModel.findByPk(id);
     if (!data) {
-      const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = `${getReasonPhrase(errorCode)}: No such user2`;
+      return handleNoUser();
+    }
+
+    if (id !== caller.id && caller.role !== Roles.ADMIN) {
+      const errorCode = StatusCodes.FORBIDDEN;
+      const errorMessage = `${getReasonPhrase(
+        errorCode
+      )}: Can't change other people`;
 
       throw new HttpError(errorMessage, errorCode);
+    }
+
+    const user = data.toJSON() as UserShape;
+
+    const payload = {
+      ...details,
+    };
+    if (details.email !== user.email) {
+      const token = AuthService.getJwt({email: details.email});
+      this.logger.info('Generated JWT: ', {token});
+
+      payload.access_token = token;
     }
 
     await this.userModel.update(payload, {
@@ -81,53 +136,23 @@ class UserService {
       },
     });
 
-    const user = data.toJSON();
     this.logger.info('Updated User: ', user);
 
     return user;
   }
 
-  async getUser(id: string): Promise<UserShape> {
-    console.log('getUser');
-    const data = await this.userModel.findByPk(id);
-    if (!data) {
-      const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = `${getReasonPhrase(errorCode)}: No such user3`;
-
-      throw new HttpError(errorMessage, errorCode);
-    }
-
-    const user = data.toJSON();
-    this.logger.info('Retrieved User: ', user);
-
-    return user;
-  }
-
-  async getUsers(): Promise<UserShape[]> {
-    console.log('getUsers');
-    const data = await this.userModel.findAll();
-    if (!data) {
-      const errorCode = StatusCodes.NOT_FOUND;
+  async deleteUser(id: string, caller: UserShape): Promise<UserShape> {
+    if (id === caller.id) {
+      const errorCode = StatusCodes.FORBIDDEN;
       const errorMessage = `${getReasonPhrase(
         errorCode
-      )}: Unable to look for users`;
+      )}: Don't shoot yourself in the foot`;
 
       throw new HttpError(errorMessage, errorCode);
     }
-
-    const users = data.map(entry => entry.toJSON());
-    this.logger.info('Retrieved Users: ', users);
-
-    return users;
-  }
-
-  async deleteUser(id: string): Promise<UserShape> {
     const data = await this.userModel.findByPk(id);
     if (!data) {
-      const errorCode = StatusCodes.NOT_FOUND;
-      const errorMessage = `${getReasonPhrase(errorCode)}: No such user4`;
-
-      throw new HttpError(errorMessage, errorCode);
+      return handleNoUser();
     }
 
     await this.userModel.destroy({

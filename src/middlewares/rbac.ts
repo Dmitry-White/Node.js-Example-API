@@ -22,7 +22,7 @@ const authorize =
         errorCode
       )}: Not enough permissions`;
 
-      next(new HttpError(errorMessage, errorCode));
+      return next(new HttpError(errorMessage, errorCode));
     }
 
     next();

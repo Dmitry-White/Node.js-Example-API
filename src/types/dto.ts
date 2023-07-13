@@ -1,9 +1,11 @@
+import {Roles} from '.';
+
 type UserShape = {
-  id: number;
+  id: number | string;
   name: string;
   email: string;
   password: string;
-  role: 'USER' | 'ADMIN';
+  role: Roles;
   access_token: string;
 };
 

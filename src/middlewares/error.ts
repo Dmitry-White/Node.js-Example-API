@@ -3,6 +3,7 @@ import {getReasonPhrase, StatusCodes} from 'http-status-codes';
 
 import {jsonApiSerializer} from '../loaders/jsonApi';
 import logger from '../loaders/logger';
+import HttpError from '../services/error';
 import TransformService from '../services/transform';
 import {Assets} from '../types';
 
@@ -21,13 +22,19 @@ const handleErrorEvent = (event: string) => (error: Error) => {
   throw error;
 };
 
+const handleNoUser = () => {
+  const errorCode = StatusCodes.NOT_FOUND;
+  const errorMessage = `${getReasonPhrase(errorCode)}: No such user`;
+
+  throw new HttpError(errorMessage, errorCode);
+};
+
 const handleAsync =
   (handler: RequestHandler): RequestHandler =>
   async (req, res, next) => {
     try {
       await handler(req, res, next);
     } catch (error) {
-      console.log('1');
       next(error);
     }
   };
@@ -118,4 +125,5 @@ export {
   errorHandler,
   handleErrorEvent,
   handleAsync,
+  handleNoUser,
 };

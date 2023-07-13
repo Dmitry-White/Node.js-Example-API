@@ -28,9 +28,10 @@ const authenticate: RequestHandler = (req, res, next) => {
   ) => unknown = (err, user, info) => {
     if (err || !user) {
       return next(info);
-    } else {
-      return next();
     }
+
+    req.user = user;
+    return next();
   };
 
   const middleware = passport.authenticate(

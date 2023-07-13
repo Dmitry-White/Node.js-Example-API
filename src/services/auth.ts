@@ -80,9 +80,7 @@ class AuthService {
 
     const user = await this.userService.findUser(email);
 
-    console.log('Comparing: ', password, user.password);
     const isValid = bcrypt.compareSync(password, user.password);
-    console.log('isValid: ', isValid);
     if (!isValid) {
       const errorCode = StatusCodes.FORBIDDEN;
       const errorMessage = `${getReasonPhrase(errorCode)}: Wrong password`;
@@ -93,7 +91,7 @@ class AuthService {
     const updatePayload: Partial<UserShape> = {
       access_token: token,
     };
-    await this.userService.updateUser(user.id, updatePayload);
+    await this.userService.updateUser(user.id, user, updatePayload);
 
     return {user, token};
   }
