@@ -16,6 +16,8 @@
     "dev": "nodemon -L",
     "lint": "gts lint",
     "lint:fix": "gts fix",
+    "seed:up": "sequelize db:seed:all",
+    "seed:down": "sequelize db:seed:undo",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -29,8 +31,10 @@
     "@types/passport-jwt": "^3.0.9",
     "gts": "^3.1.1",
     "nodemon": "^3.0.1",
+    "sequelize-cli": "^6.6.1",
     "ts-node": "^10.9.1",
-    "typescript": "~4.7.0"
+    "typescript": "~4.7.0",
+    "uuid": "^9.0.0"
   },
   "dependencies": {
     "bcrpyt": "^2.0.0",

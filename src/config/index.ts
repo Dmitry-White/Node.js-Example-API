@@ -20,6 +20,10 @@ const config = {
     errlog: process.env.ERR_LOG || 'logs/error.log',
   },
   db: {
+    host: process.env.DATABASE_HOST || 'task-db',
+    name: process.env.DATABASE_NAME || 'task',
+    user: process.env.DATABASE_USER || 'tester',
+    password: process.env.DATABASE_PASSWORD || 'qwerty',
     uri: process.env.DATABASE_URI || 'mysql://tester:qwerty@task-db:3306/task',
   },
 };

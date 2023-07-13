@@ -3,7 +3,15 @@ import {Sequelize} from 'sequelize';
 import config from '../config';
 import logger from './logger';
 
-const sequelize = new Sequelize(config.db.uri);
+const sequelize = new Sequelize(
+  config.db.name,
+  config.db.user,
+  config.db.password,
+  {
+    host: config.db.host,
+    dialect: 'mysql',
+  }
+);
 
 const dbLoader = async () => {
   try {

@@ -3,7 +3,7 @@ const {RBAC} = require('rbac');
 import {Assets, Permissions, Roles} from '../types';
 
 const policy = new RBAC({
-  roles: [Roles.ADMIN, Roles.USER],
+  roles: [Roles.USER, Roles.ADMIN],
   permissions: {
     [Assets.USER]: [
       Permissions.CREATE,

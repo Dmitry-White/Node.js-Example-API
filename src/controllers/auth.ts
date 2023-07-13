@@ -8,10 +8,16 @@ import UserService from '../services/user';
 const userService = new UserService(User, logger);
 const authService = new AuthService(userService, logger);
 
-const authenticate: RequestHandler = async (req, res) => {
+const signUp: RequestHandler = async (req, res) => {
   const data = await authService.signUp(req.body);
 
   res.json(data);
 };
 
-export {authenticate};
+const signIn: RequestHandler = async (req, res) => {
+  const data = await authService.signIn(req.body);
+
+  res.json(data);
+};
+
+export {signUp, signIn};

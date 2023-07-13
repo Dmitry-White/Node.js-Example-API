@@ -6,10 +6,11 @@ import jwt from 'jsonwebtoken';
 import Logger from '../types/logger';
 
 import config from '../config';
-import {UserDTO, UserShape} from '../types/dto';
+import {BaseDTO, UserDTO, UserShape} from '../types/dto';
 
 import UserService from './user';
 import HttpError from './error';
+import {Roles} from '../types';
 
 class AuthService {
   userService: UserService;
@@ -22,15 +23,12 @@ class AuthService {
 
   static verify(userService: UserService): VerifyCallback {
     return async (payload, done) => {
-      const user = await userService.getUser(payload.id);
-      if (!user) {
-        const errorCode = StatusCodes.NOT_FOUND;
-        const errorMessage = getReasonPhrase(errorCode);
-
-        done(new HttpError(errorMessage, errorCode));
+      try {
+        const user = await userService.findUser(payload.email);
+        done(null, user as Express.User);
+      } catch (error) {
+        done(error);
       }
-
-      done(null, user as Express.User);
     };
   }
 
@@ -59,22 +57,45 @@ class AuthService {
     const hashedPassword = await AuthService.genHash(password);
     this.logger.info('Hashed password', {hashedPassword});
 
+    const token = AuthService.getJwt({email});
+    this.logger.info('Generated JWT: ', {token});
+
     const user = await this.userService.createUser({
       name,
       email,
       password: hashedPassword,
-      role: 'USER',
+      role: Roles.USER,
+      access_token: token,
     });
-
-    const payload = {
-      id: user.id,
-      email: user.email,
-    };
-    const token = AuthService.getJwt(payload);
-    this.logger.info('Generated JWT: ', token);
 
     Reflect.deleteProperty(user, 'password');
     Reflect.deleteProperty(user, 'role');
+    Reflect.deleteProperty(user, 'access_token');
+    return {user, token};
+  }
+
+  async signIn({
+    email,
+    password,
+  }: BaseDTO): Promise<{user: UserShape; token: string}> {
+    const hashedPassword = await AuthService.genHash(password);
+    this.logger.info('Hashed password', {hashedPassword});
+
+    const token = AuthService.getJwt({email});
+    this.logger.info('Generated JWT: ', token);
+
+    const user = await this.userService.findUser(email);
+
+    await bcrypt.compare(password, hashedPassword);
+
+    const updatePayload: Partial<UserShape> = {
+      access_token: token,
+    };
+    await this.userService.updateUser(user.id, updatePayload);
+
+    Reflect.deleteProperty(user, 'password');
+    Reflect.deleteProperty(user, 'role');
+    Reflect.deleteProperty(user, 'access_token');
     return {user, token};
   }
 }
