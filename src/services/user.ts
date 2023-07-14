@@ -28,7 +28,7 @@ class UserService {
       return handleNoUser();
     }
 
-    const user = data.toJSON();
+    const user = data.dataValues;
     this.logger.info('Found User: ', user);
 
     return user;
@@ -40,6 +40,9 @@ class UserService {
       return handleNoUser();
     }
 
+    const user = data.dataValues;
+    this.logger.info('Retrieved User: ', user);
+
     if (id !== caller.id && caller.role !== Roles.ADMIN) {
       const errorCode = StatusCodes.FORBIDDEN;
       const errorMessage = `${getReasonPhrase(errorCode)}: Mind your business`;
@@ -47,10 +50,7 @@ class UserService {
       throw new HttpError(errorMessage, errorCode);
     }
 
-    const user = data.toJSON();
-    this.logger.info('Retrieved User: ', user);
-
-    return user;
+    return data.dataValues;
   }
 
   async getUsers(): Promise<UserShape[]> {
@@ -64,7 +64,7 @@ class UserService {
       throw new HttpError(errorMessage, errorCode);
     }
 
-    const users = data.map(entry => entry.toJSON());
+    const users = data.map(entry => entry.dataValues);
     this.logger.info('Retrieved Users: ', users);
 
     return users;
@@ -93,7 +93,7 @@ class UserService {
       throw new HttpError(errorMessage, errorCode);
     }
 
-    const user = data.toJSON();
+    const user = data.dataValues;
     this.logger.info('Created User: ', user);
 
     return user;
@@ -118,7 +118,8 @@ class UserService {
       throw new HttpError(errorMessage, errorCode);
     }
 
-    const user = data.toJSON() as UserShape;
+    const user = data.dataValues;
+    this.logger.info('Updated User: ', user);
 
     const payload = {
       ...details,
@@ -136,8 +137,6 @@ class UserService {
       },
     });
 
-    this.logger.info('Updated User: ', user);
-
     return user;
   }
 
@@ -150,19 +149,19 @@ class UserService {
 
       throw new HttpError(errorMessage, errorCode);
     }
-    const data = await this.userModel.findByPk(id);
+    const data = await this.userModel.findByPk(id, {});
     if (!data) {
       return handleNoUser();
     }
+
+    const user = data.dataValues;
+    this.logger.info('Deleted User: ', user);
 
     await this.userModel.destroy({
       where: {
         id,
       },
     });
-
-    const user = data.toJSON();
-    this.logger.info('Deleted User: ', user);
 
     return user;
   }
